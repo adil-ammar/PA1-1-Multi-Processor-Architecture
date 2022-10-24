@@ -12,7 +12,8 @@ int main (int argc, char *argv[]) {
         a[i] = b[i] = i * 1.0; // initialize arrays
 
     chunk = CHUNKSIZE;
-    
+
+    double start = omp_get_wtime();    
     #pragma omp parallel shared(a,b,c,nthreads,chunk) private(i,tid)
     {
         tid = omp_get_thread_num();
@@ -22,11 +23,14 @@ int main (int argc, char *argv[]) {
         }
         printf("Thread %d starting...\n",tid);
 
-        #pragma omp for schedule(dynamic,chunk)
+        #pragma omp for schedule(guided ,chunk)
         for (i=0; i<N; i++){
             c[i] = a[i] + b[i];
             printf("Thread %d: c[%d]= %f\n",tid,i,c[i]);
         }
     } /* end of parallel section */
+
+    printf("Time: \t %f \n", omp_get_wtime()-start);
+    
     return(0);
 }
